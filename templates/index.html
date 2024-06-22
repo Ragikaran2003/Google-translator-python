@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Google Translator</h1>
+        <textarea id="text" placeholder="Enter text to translate..."></textarea>
+        <select id="dest_lang">
+            {% for code, name in languages.items() %}
+            <option value="{{ code }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <button onclick="translateText()">Translate</button>
+        <div id="translated_text"></div>
+    </div>
+    <script>
+        async function translateText() {
+            const text = document.getElementById('text').value;
+            const destLang = document.getElementById('dest_lang').value;
+
+            const response = await fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text, dest_lang: destLang }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                document.getElementById('translated_text').innerText = result.translated_text;
+            } else {
+                document.getElementById('translated_text').innerText = result.error;
+            }
+        }
+    </script>
+</body>
+
+</html>
